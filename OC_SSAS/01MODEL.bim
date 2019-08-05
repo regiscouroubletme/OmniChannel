@@ -1,0 +1,2681 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1200,
+  "model": {
+    "culture": "fr-BE",
+    "dataSources": [
+      {
+        "name": "VisionDB",
+        "connectionString": "Data Source=visiondbsqlprd.database.windows.net,1433;Initial Catalog=VisionDBPrd;Persist Security Info=true;User ID=svc_visiondb;Encrypt=True;TrustServerCertificate=False;Application Name=OC_SSAS",
+        "impersonationMode": "impersonateAccount",
+        "account": "COMMON\\rco0296",
+        "provider": "System.Data.SqlClient",
+        "annotations": [
+          {
+            "name": "ConnectionEditUISource",
+            "value": "AzureSqlDW"
+          }
+        ]
+      },
+      {
+        "name": "BICC",
+        "connectionString": "Data Source=tme-bicc-azure-server.database.windows.net;Initial Catalog=BICC_DWH;Persist Security Info=true;User ID=BICC_etl;Encrypt=True;TrustServerCertificate=False;Application Name=OC_SSAS",
+        "impersonationMode": "impersonateAccount",
+        "account": "COMMON\\rco0296",
+        "provider": "System.Data.SqlClient",
+        "annotations": [
+          {
+            "name": "ConnectionEditUISource",
+            "value": "AzureSqlDW"
+          }
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "name": "Geography",
+        "columns": [
+          {
+            "name": "country",
+            "dataType": "string",
+            "sourceColumn": "country",
+            "sourceProviderType": "varchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "char"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "varchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "varchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Geography",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [base].[Geography].* FROM [base].[Geography] ",
+              "dataSource": "BICC"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [base].[Geography].* FROM [base].[Geography] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "Geography"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "base"
+          }
+        ]
+      },
+      {
+        "name": "calendar",
+        "dataCategory": "Time",
+        "columns": [
+          {
+            "name": "Date",
+            "dataType": "dateTime",
+            "isUnique": true,
+            "isKey": true,
+            "sourceColumn": "Date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "DateAsInteger",
+            "dataType": "string",
+            "sourceColumn": "DateAsInteger",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "Year",
+            "dataType": "int64",
+            "sourceColumn": "Year",
+            "sourceProviderType": "smallint",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Monthnumber",
+            "dataType": "string",
+            "sourceColumn": "Monthnumber",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "YearMonthnumber",
+            "dataType": "string",
+            "sourceColumn": "YearMonthnumber",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "YearMonthShort",
+            "dataType": "string",
+            "sourceColumn": "YearMonthShort",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "MonthNameShort",
+            "dataType": "string",
+            "sourceColumn": "MonthNameShort",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "MonthNameLong",
+            "dataType": "string",
+            "sourceColumn": "MonthNameLong",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "DayOfWeekNumber",
+            "dataType": "int64",
+            "sourceColumn": "DayOfWeekNumber",
+            "sourceProviderType": "int",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DayOfWeek",
+            "dataType": "string",
+            "sourceColumn": "DayOfWeek",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "DayOfWeekShort",
+            "dataType": "string",
+            "sourceColumn": "DayOfWeekShort",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "Quarter",
+            "dataType": "string",
+            "sourceColumn": "Quarter",
+            "sourceProviderType": "varchar"
+          },
+          {
+            "name": "YearQuarter",
+            "dataType": "string",
+            "sourceColumn": "YearQuarter",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Calendar",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [oc].[vwCalendar].* FROM [oc].[vwCalendar] ",
+              "dataSource": "BICC"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "end_period",
+            "expression": " LASTDATE('calendar'[Date])",
+            "formatString": "General Date"
+          },
+          {
+            "name": "start_period",
+            "expression": " FIRSTDATE('calendar'[Date])",
+            "formatString": "General Date"
+          },
+          {
+            "name": "days_in_period",
+            "expression": " DATEDIFF([start_period],[end_period],DAY)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "start_previous_period",
+            "expression": " PREVIOUSDAY(FIRSTDATE(DATEADD('calendar'[Date],-1*[days_in_period],DAY)))",
+            "formatString": "General Date"
+          },
+          {
+            "name": "end_previous_period",
+            "expression": " PREVIOUSDAY(LASTDATE(DATEADD('calendar'[Date],-1*[days_in_period],DAY)))",
+            "formatString": "General Date"
+          },
+          {
+            "name": "days_previous_period",
+            "expression": " DATEDIFF([start_previous_period],[end_previous_period],DAY)",
+            "formatString": "#,0"
+          }
+        ],
+        "hierarchies": [
+          {
+            "name": "Date Hierarchy",
+            "levels": [
+              {
+                "name": "Date",
+                "ordinal": 3,
+                "column": "Date"
+              },
+              {
+                "name": "Year",
+                "ordinal": 0,
+                "column": "Year"
+              },
+              {
+                "name": "YearQuarter",
+                "ordinal": 1,
+                "column": "YearQuarter"
+              },
+              {
+                "name": "YearMonthShort",
+                "ordinal": 2,
+                "column": "YearMonthShort"
+              }
+            ]
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [oc].[vwCalendar].* FROM [oc].[vwCalendar] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "vwCalendar"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "oc"
+          }
+        ]
+      },
+      {
+        "name": "model",
+        "columns": [
+          {
+            "name": "model",
+            "dataType": "string",
+            "sourceColumn": "model",
+            "sourceProviderType": "VarChar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": [
+                "select",
+                "model ",
+                "from (",
+                "",
+                "\tselect model from [dbo].[WS_NMSC_MODEL_configuration_metric_model] group by model",
+                "\tunion",
+                "\tselect model from [dbo].[WS_NMSC_MODEL_high_interest_visits_model] group by model",
+                "\tunion",
+                "\tselect model from [dbo].[WS_NMSC_MODEL_leads_model] group by model",
+                "\tunion",
+                "\tselect model from dbo.WS_NMSC_MODEL_reach_and_engagement_model group by model",
+                "\t) m",
+                "order by model"
+              ],
+              "dataSource": "VisionDB"
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>select",
+                  "model ",
+                  "from (",
+                  "",
+                  "\tselect model from [dbo].[WS_NMSC_MODEL_configuration_metric_model] group by model",
+                  "\tunion",
+                  "\tselect model from [dbo].[WS_NMSC_MODEL_high_interest_visits_model] group by model",
+                  "\tunion",
+                  "\tselect model from [dbo].[WS_NMSC_MODEL_leads_model] group by model",
+                  "\tunion",
+                  "\tselect model from dbo.WS_NMSC_MODEL_reach_and_engagement_model group by model",
+                  "\t) m",
+                  "order by model</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": [
+              "select",
+              "model ",
+              "from (",
+              "",
+              "\tselect model from [dbo].[WS_NMSC_MODEL_configuration_metric_model] group by model",
+              "\tunion",
+              "\tselect model from [dbo].[WS_NMSC_MODEL_high_interest_visits_model] group by model",
+              "\tunion",
+              "\tselect model from [dbo].[WS_NMSC_MODEL_leads_model] group by model",
+              "\tunion",
+              "\tselect model from dbo.WS_NMSC_MODEL_reach_and_engagement_model group by model",
+              "\t) m",
+              "order by model"
+            ]
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "Model"
+          },
+          {
+            "name": "QueryEditorSerialization",
+            "value": [
+              "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>select",
+              "model ",
+              "from (",
+              "",
+              "\tselect model from [dbo].[WS_NMSC_MODEL_configuration_metric_model] group by model",
+              "\tunion",
+              "\tselect model from [dbo].[WS_NMSC_MODEL_high_interest_visits_model] group by model",
+              "\tunion",
+              "\tselect model from [dbo].[WS_NMSC_MODEL_leads_model] group by model",
+              "\tunion",
+              "\tselect model from dbo.WS_NMSC_MODEL_reach_and_engagement_model group by model",
+              "\t) m",
+              "order by model</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "device",
+        "columns": [
+          {
+            "name": "device",
+            "dataType": "string",
+            "sourceColumn": "device",
+            "sourceProviderType": "VarChar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Device",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": [
+                "select",
+                "device ",
+                "from (",
+                "",
+                "\tselect device from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by device",
+                "\tunion",
+                "\tselect device from [dbo].WS_NMSC_SITE_high_interest_visits group by device",
+                "\tunion",
+                "\tselect device from [dbo].WS_NMSC_SITE_leads group by device",
+                "\tunion",
+                "\tselect device from [dbo].WS_NMSC_SITE_reach_and_engagement group by device",
+                "\tunion",
+                "\tselect device from [dbo].WS_NMSC_SITE_site_key_sections group by device",
+                "\tunion",
+                "\tselect device from [dbo].WS_NMSC_SITE_used_cars_conversions group by device\t",
+                "\tunion",
+                "\tselect device from [dbo].WS_NMSC_SITE_value_chain_conversions group by device\t",
+                "\t) m",
+                "order by device"
+              ],
+              "dataSource": "VisionDB"
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>select",
+                  "device ",
+                  "from (",
+                  "",
+                  "\tselect device from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by device",
+                  "\tunion",
+                  "\tselect device from [dbo].WS_NMSC_SITE_high_interest_visits group by device",
+                  "\tunion",
+                  "\tselect device from [dbo].WS_NMSC_SITE_leads group by device",
+                  "\tunion",
+                  "\tselect device from [dbo].WS_NMSC_SITE_reach_and_engagement group by device",
+                  "\tunion",
+                  "\tselect device from [dbo].WS_NMSC_SITE_site_key_sections group by device",
+                  "\tunion",
+                  "\tselect device from [dbo].WS_NMSC_SITE_used_cars_conversions group by device\t",
+                  "\tunion",
+                  "\tselect device from [dbo].WS_NMSC_SITE_value_chain_conversions group by device\t",
+                  "\t) m",
+                  "order by device</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": [
+              "select",
+              "device ",
+              "from (",
+              "",
+              "\tselect device from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_high_interest_visits group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_leads group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_reach_and_engagement group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_site_key_sections group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_used_cars_conversions group by device\t",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_value_chain_conversions group by device\t",
+              "\t) m",
+              "order by device"
+            ]
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "Device"
+          },
+          {
+            "name": "QueryEditorSerialization",
+            "value": [
+              "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>select",
+              "device ",
+              "from (",
+              "",
+              "\tselect device from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_high_interest_visits group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_leads group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_reach_and_engagement group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_site_key_sections group by device",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_used_cars_conversions group by device\t",
+              "\tunion",
+              "\tselect device from [dbo].WS_NMSC_SITE_value_chain_conversions group by device\t",
+              "\t) m",
+              "order by device</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_high_interest_visits_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "cnt_session",
+            "dataType": "int64",
+            "sourceColumn": "cnt_session",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "car_configurator",
+            "dataType": "int64",
+            "sourceColumn": "car_configurator",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "mini_car_configurator",
+            "dataType": "int64",
+            "sourceColumn": "mini_car_configurator",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "finance_calculator",
+            "dataType": "int64",
+            "sourceColumn": "finance_calculator",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "insurance_calculator",
+            "dataType": "int64",
+            "sourceColumn": "insurance_calculator",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "document_downloads",
+            "dataType": "int64",
+            "sourceColumn": "document_downloads",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "personalized_brochures",
+            "dataType": "int64",
+            "sourceColumn": "personalized_brochures",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "trade_in_quotations",
+            "dataType": "int64",
+            "sourceColumn": "trade_in_quotations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "dealer_finder",
+            "dataType": "int64",
+            "sourceColumn": "dealer_finder",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "type": "calculated",
+            "name": "total_model_high_interest_sessions",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " WS_NMSC_MODEL_high_interest_visits_model[car_configurator]+WS_NMSC_MODEL_high_interest_visits_model[mini_car_configurator]+WS_NMSC_MODEL_high_interest_visits_model[finance_calculator]+WS_NMSC_MODEL_high_interest_visits_model[document_downloads]+'WS_NMSC_MODEL_high_interest_visits_model'[trade_in_quotations]+WS_NMSC_MODEL_high_interest_visits_model[personalized_brochures]+'WS_NMSC_MODEL_high_interest_visits_model'[insurance_calculator]",
+            "formatString": "#,0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_high_interest_visits_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_high_interest_visits_model].* FROM [dbo].[WS_NMSC_MODEL_high_interest_visits_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Sum of total_model_high_interest_sessions",
+            "expression": "SUM([total_model_high_interest_sessions])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "var_model_high_interest_sessions",
+            "expression": [
+              " ",
+              "    VAR sum_model_high_interest_sessions = SUM(WS_NMSC_MODEL_high_interest_visits_model[total_model_high_interest_sessions])",
+              "    VAR model_high_interest_sessions_PY = CALCULATE(SUM(WS_NMSC_MODEL_high_interest_visits_model[total_model_high_interest_sessions]),SAMEPERIODLASTYEAR('calendar'[Date]))",
+              "    VAR diff_model_high_interest_sessions_PY = sum_model_high_interest_sessions - model_high_interest_sessions_PY",
+              "    RETURN DIVIDE(diff_model_high_interest_sessions_PY,model_high_interest_sessions_PY)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "config_share",
+            "expression": " Sum(WS_NMSC_MODEL_high_interest_visits_model[car_configurator])/sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_car_configurator_sessions",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[car_configurator])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_document_downloads",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[document_downloads])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_finance_calculator_sessions",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[finance_calculator])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_insurance_calculator_sessions",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[insurance_calculator])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_mini_car_configurator_sessions",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[mini_car_configurator])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_pers_brochures",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[personalized_brochures])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_trade-in_quotations",
+            "expression": " SUM(WS_NMSC_MODEL_high_interest_visits_model[trade_in_quotations])/Sum(WS_NMSC_MODEL_high_interest_visits_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_high_interest_sessions",
+            "expression": " SUM('WS_NMSC_MODEL_high_interest_visits_model'[total_model_high_interest_sessions])/Sum(WS_NMSC_MODEL_reach_and_engagement_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "avg_cluster_high_interest_session",
+            "expression": [
+              " ",
+              "VAR total_high_interest_sessions = Sum(WS_NMSC_MODEL_high_interest_visits_model[total_model_high_interest_sessions])",
+              "VAR nb_countries = DISTINCTCOUNT(Geography[country])",
+              "RETURN DIVIDE(total_high_interest_sessions,nb_countries)"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "var_part_model_high_interest_sessions",
+            "expression": [
+              " ",
+              "    VAR sum_model_part_high_interest_sessions = WS_NMSC_MODEL_high_interest_visits_model[%model_high_interest_sessions]",
+              "    VAR model_part_high_interest_sessions_PY = CALCULATE(WS_NMSC_MODEL_high_interest_visits_model[%model_high_interest_sessions],SAMEPERIODLASTYEAR('calendar'[Date]))",
+              "    RETURN (sum_model_part_high_interest_sessions - model_part_high_interest_sessions_PY)*100"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Sum of high interest cnt_session",
+            "expression": "SUM([cnt_session])",
+            "formatString": "#,0"
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_high_interest_visits_model].* FROM [dbo].[WS_NMSC_MODEL_high_interest_visits_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_high_interest_visits_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_configuration_accessories_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "accessory_id",
+            "dataType": "string",
+            "sourceColumn": "accessory_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "accessory_name",
+            "dataType": "string",
+            "sourceColumn": "accessory_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "accessory_category",
+            "dataType": "string",
+            "sourceColumn": "accessory_category",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "configurations",
+            "dataType": "int64",
+            "sourceColumn": "configurations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "item_total_value",
+            "dataType": "double",
+            "sourceColumn": "item_total_value",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_configuration_accessories_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_configuration_accessories_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_accessories_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_configuration_accessories_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_accessories_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_configuration_accessories_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_configuration_details_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "car_id",
+            "dataType": "string",
+            "sourceColumn": "car_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "body_type",
+            "dataType": "string",
+            "sourceColumn": "body_type",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "engine",
+            "dataType": "string",
+            "sourceColumn": "engine",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "transmission",
+            "dataType": "string",
+            "sourceColumn": "transmission",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "grade",
+            "dataType": "string",
+            "sourceColumn": "grade",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "ext_color",
+            "dataType": "string",
+            "sourceColumn": "ext_color",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "upholstery",
+            "dataType": "string",
+            "sourceColumn": "upholstery",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "car_configurations",
+            "dataType": "int64",
+            "sourceColumn": "car_configurations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "car_price",
+            "dataType": "double",
+            "sourceColumn": "car_price",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "total_config_price",
+            "dataType": "double",
+            "sourceColumn": "total_config_price",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_configuration_details_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_configuration_details_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_details_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_configuration_details_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_details_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_configuration_details_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_configuration_metric_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "cnt_session",
+            "dataType": "int64",
+            "sourceColumn": "cnt_session",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "car_configurations",
+            "dataType": "int64",
+            "sourceColumn": "car_configurations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "configurations_with_no_accessory",
+            "dataType": "int64",
+            "sourceColumn": "configurations_with_no_accessory",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "configurations_with_no_pack",
+            "dataType": "int64",
+            "sourceColumn": "configurations_with_no_pack",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "configurations_with_no_option",
+            "dataType": "int64",
+            "sourceColumn": "configurations_with_no_option",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "hybrid_configurations",
+            "dataType": "int64",
+            "sourceColumn": "hybrid_configurations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "car_price",
+            "dataType": "double",
+            "sourceColumn": "car_price",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "total_config_price",
+            "dataType": "double",
+            "sourceColumn": "total_config_price",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_configuration_metric_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_configuration_metric_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_metric_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "avg_car_price",
+            "expression": " sum(WS_NMSC_MODEL_configuration_metric_model[car_price])/sum(WS_NMSC_MODEL_configuration_metric_model[car_configurations])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "avg_cluster_configurations",
+            "expression": [
+              " ",
+              "VAR total_configurations= SUm(WS_NMSC_MODEL_configuration_metric_model[car_configurations])",
+              "VAR nb_countries=DISTINCTCOUNT(Geography[country])",
+              "RETURN DIVIDE(total_configurations,nb_countries)"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "avg_config_price",
+            "expression": " sum(WS_NMSC_MODEL_configuration_metric_model[total_config_price])/sum(WS_NMSC_MODEL_configuration_metric_model[car_configurations])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "avg_extra_price",
+            "expression": " [avg_config_price]-[avg_car_price]",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "hybrid_share",
+            "expression": " sum(WS_NMSC_MODEL_configuration_metric_model[hybrid_configurations])/sum(WS_NMSC_MODEL_configuration_metric_model[car_configurations])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "Non-hybrid_share",
+            "expression": " 1-WS_NMSC_MODEL_configuration_metric_model[hybrid_share]",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "var tot_config_pr_period",
+            "expression": [
+              " ",
+              "VAR tot_config = SUM(WS_NMSC_MODEL_configuration_metric_model[car_configurations])",
+              "VAR tot_config_PR = CALCULATE(SUM(WS_NMSC_MODEL_configuration_metric_model[car_configurations]),DATESBETWEEN('calendar'[Date],[start_previous_period],[end_previous_period]))",
+              "VAR diff_tot_config = tot_config-tot_config_PR",
+              "RETURN DIVIDE(diff_tot_config,tot_config_PR)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "var avg_car_price_pr_period",
+            "expression": [
+              " ",
+              "VAR avg_car_price = [avg_car_price]",
+              "VAR avg_car_price_PR = CALCULATE('WS_NMSC_MODEL_configuration_metric_model'[avg_car_price],DATESBETWEEN('calendar'[Date],[start_previous_period],[end_previous_period]))",
+              "VAR diff_avg_car_price = avg_car_price-avg_car_price_PR",
+              "RETURN DIVIDE(diff_avg_car_price,avg_car_price_PR)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "var_avg_config_price_pr_period",
+            "expression": [
+              " ",
+              "VAR avg_config_price = [avg_config_price]",
+              "VAR avg_config_price_PR = CALCULATE('WS_NMSC_MODEL_configuration_metric_model'[avg_config_price],DATESBETWEEN('calendar'[Date],[start_previous_period],[end_previous_period]))",
+              "VAR diff_avg_config_price = avg_config_price-avg_config_price_PR",
+              "RETURN DIVIDE(diff_avg_config_price,avg_config_price_PR)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "var_avg_extra_price_pr_period",
+            "expression": [
+              " ",
+              "VAR avg_extra_price = [avg_extra_price]",
+              "VAR avg_extra_price_PR = CALCULATE('WS_NMSC_MODEL_configuration_metric_model'[avg_extra_price],DATESBETWEEN('calendar'[Date],[start_previous_period],[end_previous_period]))",
+              "VAR diff_avg_extra_price = avg_extra_price-avg_extra_price_PR",
+              "RETURN DIVIDE(diff_avg_extra_price,avg_extra_price_PR)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_configuration_metric_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_metric_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_configuration_metric_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_configuration_options_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "option_id",
+            "dataType": "string",
+            "sourceColumn": "option_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "option_name",
+            "dataType": "string",
+            "sourceColumn": "option_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "option_category",
+            "dataType": "string",
+            "sourceColumn": "option_category",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "configurations",
+            "dataType": "int64",
+            "sourceColumn": "configurations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "item_total_value",
+            "dataType": "double",
+            "sourceColumn": "item_total_value",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_configuration_options_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_configuration_options_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_options_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_configuration_options_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_options_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_configuration_options_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_configuration_packs_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "pack_id",
+            "dataType": "string",
+            "sourceColumn": "pack_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "pack_name",
+            "dataType": "string",
+            "sourceColumn": "pack_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "configurations",
+            "dataType": "int64",
+            "sourceColumn": "configurations",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "item_total_value",
+            "dataType": "double",
+            "sourceColumn": "item_total_value",
+            "formatString": "#,0.00",
+            "sourceProviderType": "float"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_configuration_packs_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_configuration_packs_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_packs_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_configuration_packs_model].* FROM [dbo].[WS_NMSC_MODEL_configuration_packs_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_configuration_packs_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_leads_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "cnt_session",
+            "dataType": "int64",
+            "sourceColumn": "cnt_session",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "test_drive_standard",
+            "dataType": "int64",
+            "sourceColumn": "test_drive_standard",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "test_drive_active_lead",
+            "dataType": "int64",
+            "sourceColumn": "test_drive_active_lead",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "send_to_dealer",
+            "dataType": "int64",
+            "sourceColumn": "send_to_dealer",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "call_dealer",
+            "dataType": "int64",
+            "sourceColumn": "call_dealer",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "brochure_requests_standard",
+            "dataType": "int64",
+            "sourceColumn": "brochure_requests_standard",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "brochure_requests_active_lead",
+            "dataType": "int64",
+            "sourceColumn": "brochure_requests_active_lead",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "offer_requests_standard",
+            "dataType": "int64",
+            "sourceColumn": "offer_requests_standard",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "offer_requests_active_lead",
+            "dataType": "int64",
+            "sourceColumn": "offer_requests_active_lead",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "other_leads",
+            "dataType": "int64",
+            "sourceColumn": "other_leads",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "type": "calculated",
+            "name": "total_model_brochure_requests",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " WS_NMSC_MODEL_leads_model[brochure_requests_active_lead]+WS_NMSC_MODEL_leads_model[brochure_requests_standard]",
+            "formatString": "#,0"
+          },
+          {
+            "type": "calculated",
+            "name": "total_model_leads_sessions",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " WS_NMSC_MODEL_leads_model[brochure_requests_active_lead]+WS_NMSC_MODEL_leads_model[test_drive_active_lead]+WS_NMSC_MODEL_leads_model[offer_requests_active_lead]+WS_NMSC_MODEL_leads_model[brochure_requests_standard]+WS_NMSC_MODEL_leads_model[offer_requests_standard]+WS_NMSC_MODEL_leads_model[send_to_dealer]+WS_NMSC_MODEL_leads_model[other_leads]+WS_NMSC_MODEL_leads_model[test_drive_standard]",
+            "formatString": "#,0"
+          },
+          {
+            "type": "calculated",
+            "name": "total_model_offer_requests",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " WS_NMSC_MODEL_leads_model[offer_requests_active_lead]+WS_NMSC_MODEL_leads_model[offer_requests_standard]",
+            "formatString": "#,0"
+          },
+          {
+            "type": "calculated",
+            "name": "total_model_testdrive_sessions",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " WS_NMSC_MODEL_leads_model[test_drive_active_lead]+WS_NMSC_MODEL_leads_model[test_drive_standard]",
+            "formatString": "#,0"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_leads_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_leads_model].* FROM [dbo].[WS_NMSC_MODEL_leads_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "%model_leads_sessions",
+            "expression": " SUM('WS_NMSC_MODEL_leads_model'[total_model_leads_sessions])/Sum(WS_NMSC_MODEL_leads_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_brochure_requests",
+            "expression": " SUM(WS_NMSC_MODEL_leads_model[total_model_brochure_requests])/Sum(WS_NMSC_MODEL_leads_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_offer_requests",
+            "expression": " sum(WS_NMSC_MODEL_leads_model[total_model_offer_requests])/sum(WS_NMSC_MODEL_leads_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_other_leads_sessions",
+            "expression": " SUM(WS_NMSC_MODEL_leads_model[other_leads])/Sum(WS_NMSC_MODEL_leads_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_sent_to_dealer",
+            "expression": " SUM(WS_NMSC_MODEL_leads_model[send_to_dealer])/Sum(WS_NMSC_MODEL_leads_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "%model_test-drive_sessions",
+            "expression": " SUM(WS_NMSC_MODEL_leads_model[total_model_testdrive_sessions])/Sum(WS_NMSC_MODEL_leads_model[cnt_session])",
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "avg_cluster_leads_session",
+            "expression": [
+              " ",
+              "VAR total_leads_sessions = SUM(WS_NMSC_MODEL_leads_model[total_model_leads_sessions])",
+              "VAR nb_countries=DISTINCTCOUNT(Geography[country])",
+              "RETURN DIVIDE(total_leads_sessions,nb_countries)"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "var_model_leads_sessions",
+            "expression": [
+              " ",
+              "    VAR sum_model_leads_sessions = SUM(WS_NMSC_MODEL_leads_model[total_model_leads_sessions])",
+              "    VAR model_leads_sessions_PY = CALCULATE(SUM(WS_NMSC_MODEL_leads_model[total_model_leads_sessions]),SAMEPERIODLASTYEAR('calendar'[Date]))",
+              "    VAR diff_model_leads_sessions_PY = sum_model_leads_sessions - model_leads_sessions_PY",
+              "    RETURN DIVIDE(diff_model_leads_sessions_PY,model_leads_sessions_PY)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "var_part_model_leads_sessions",
+            "expression": [
+              " ",
+              "    VAR model_leads_sessions = WS_NMSC_MODEL_leads_model[%model_leads_sessions]",
+              "    VAR model_leads_sessions_PY = CALCULATE(WS_NMSC_MODEL_leads_model[%model_leads_sessions],SAMEPERIODLASTYEAR('calendar'[Date]))",
+              "    RETURN (model_leads_sessions - model_leads_sessions_PY)*100"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          },
+          {
+            "name": "Sum of total_model_leads_sessions",
+            "expression": "SUM([total_model_leads_sessions])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Sum of lead cnt_session",
+            "expression": "SUM([cnt_session])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Sum of total_model_brochure_requests",
+            "expression": "SUM([total_model_brochure_requests])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Sum of total_model_offer_requests",
+            "expression": "SUM([total_model_offer_requests])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Sum of total_model_testdrive_sessions",
+            "expression": "SUM([total_model_testdrive_sessions])",
+            "formatString": "#,0"
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_leads_model].* FROM [dbo].[WS_NMSC_MODEL_leads_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_leads_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "WS_NMSC_MODEL_reach_and_engagement_model",
+        "columns": [
+          {
+            "name": "id_key",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "id_key",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "ga_id",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ga_id",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "sourceColumn": "date",
+            "formatString": "General Date",
+            "sourceProviderType": "date"
+          },
+          {
+            "name": "model_id",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model_id",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "model",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "model",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "device",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "device",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "campaign",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "campaign",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "cnt_session",
+            "dataType": "int64",
+            "sourceColumn": "cnt_session",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "cnt_engaged",
+            "dataType": "int64",
+            "sourceColumn": "cnt_engaged",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "cnt_bounces",
+            "dataType": "int64",
+            "sourceColumn": "cnt_bounces",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "cnt_new_visit",
+            "dataType": "int64",
+            "sourceColumn": "cnt_new_visit",
+            "formatString": "#,0",
+            "sourceProviderType": "int"
+          },
+          {
+            "name": "country",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_name",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_name",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "country_code",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "country_code",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc",
+            "sourceProviderType": "nvarchar"
+          },
+          {
+            "name": "nmsc_cluster",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "nmsc_cluster",
+            "sourceProviderType": "nvarchar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "WS_NMSC_MODEL_reach_and_engagement_model",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [dbo].[WS_NMSC_MODEL_reach_and_engagement_model].* FROM [dbo].[WS_NMSC_MODEL_reach_and_engagement_model] ",
+              "dataSource": "VisionDB"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "avg_cluster_model_sessions",
+            "expression": [
+              " ",
+              "VAR total_sessions = SUM (WS_NMSC_MODEL_reach_and_engagement_model[cnt_session])",
+              "VAR nb_countries = DISTINCTCOUNT(Geography[country])",
+              "RETURN DIVIDE(total_sessions,nb_countries)"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "var_model_site_sessions",
+            "expression": [
+              " ",
+              "    VAR sum_model_sessions = SUM('WS_NMSC_MODEL_reach_and_engagement_model'[cnt_session])",
+              "    VAR model_sessions_PY = CALCULATE(SUM('WS_NMSC_MODEL_reach_and_engagement_model'[cnt_session]),SAMEPERIODLASTYEAR('calendar'[Date]))",
+              "    VAR diff_model_sessions_PY = sum_model_sessions - model_sessions_PY",
+              "    RETURN DIVIDE(diff_model_sessions_PY,model_sessions_PY)"
+            ],
+            "formatString": "#,0.00 %;-#,0.00 %;#,0.00 %"
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [dbo].[WS_NMSC_MODEL_reach_and_engagement_model].* FROM [dbo].[WS_NMSC_MODEL_reach_and_engagement_model] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "WS_NMSC_MODEL_reach_and_engagement_model"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "dbo"
+          }
+        ]
+      },
+      {
+        "name": "measures-selector",
+        "columns": [
+          {
+            "name": "MeasureName",
+            "dataType": "string",
+            "sourceColumn": "MeasureName",
+            "sourceProviderType": "varchar"
+          },
+          {
+            "name": "MeasureId",
+            "dataType": "int64",
+            "sourceColumn": "MeasureId",
+            "sourceProviderType": "int"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Measures-selector",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": " SELECT [oc].[Measures-selector].* FROM [oc].[Measures-selector] ",
+              "dataSource": "BICC"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "displayMeasure",
+            "expression": " SWITCH(MIN('measures-selector'[MeasureId]),1,[avg_cluster_model_sessions],2,[avg_cluster_high_interest_session],3,[%model_high_interest_sessions],4,[avg_cluster_leads_session],5,[%model_leads_sessions],6,[avg_cluster_configurations])"
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": " SELECT [oc].[Measures-selector].* FROM [oc].[Measures-selector] "
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "Measures-selector"
+          },
+          {
+            "name": "_TM_ExtProp_DbSchemaName",
+            "value": "oc"
+          }
+        ]
+      },
+      {
+        "name": "channel_group",
+        "columns": [
+          {
+            "name": "channel_group",
+            "dataType": "string",
+            "sourceColumn": "channel_group",
+            "sourceProviderType": "VarChar"
+          },
+          {
+            "name": "channel_grouping",
+            "dataType": "string",
+            "sourceColumn": "channel_grouping",
+            "sourceProviderType": "VarChar"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "channel_group",
+            "dataView": "full",
+            "source": {
+              "type": "query",
+              "query": [
+                "select ",
+                "",
+                "\tchannel_group ",
+                "\t,(CASE channel_group",
+                "\t\tWHEN 'Direct' THEN channel_group",
+                "\t\tWHEN 'Organic Search' THEN channel_group",
+                "\t\tWHEN 'Paid Search' THEN channel_group",
+                "\t\tWHEN 'Display' THEN 'Paid Media'",
+                "\t\tWHEN '(Other)' THEN 'Paid Media'",
+                "\t\tWHEN 'Email' THEN 'Paid Media'",
+                "\t\tELSE 'Referral & Social'",
+                "\t END) as channel_grouping",
+                "",
+                "",
+                "from (",
+                "",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by channel_group",
+                "\tunion",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_high_interest_visits group by channel_group",
+                "\tunion",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_leads group by channel_group",
+                "\tunion",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_reach_and_engagement group by channel_group",
+                "\tunion",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_site_key_sections group by channel_group",
+                "\tunion",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_used_cars_conversions group by channel_group",
+                "\tunion",
+                "\tselect channel_group from [dbo].WS_NMSC_SITE_value_chain_conversions group by channel_group",
+                "\t) m",
+                "",
+                "\torder by channel_group"
+              ],
+              "dataSource": "VisionDB"
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>select ",
+                  "",
+                  "\tchannel_group ",
+                  "\t,(CASE channel_group",
+                  "\t\tWHEN 'Direct' THEN channel_group",
+                  "\t\tWHEN 'Organic Search' THEN channel_group",
+                  "\t\tWHEN 'Paid Search' THEN channel_group",
+                  "\t\tWHEN 'Display' THEN 'Paid Media'",
+                  "\t\tWHEN '(Other)' THEN 'Paid Media'",
+                  "\t\tWHEN 'Email' THEN 'Paid Media'",
+                  "\t\tELSE 'Referral & Social'",
+                  "\t END) as channel_grouping",
+                  "",
+                  "",
+                  "from (",
+                  "",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by channel_group",
+                  "\tunion",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_high_interest_visits group by channel_group",
+                  "\tunion",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_leads group by channel_group",
+                  "\tunion",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_reach_and_engagement group by channel_group",
+                  "\tunion",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_site_key_sections group by channel_group",
+                  "\tunion",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_used_cars_conversions group by channel_group",
+                  "\tunion",
+                  "\tselect channel_group from [dbo].WS_NMSC_SITE_value_chain_conversions group by channel_group",
+                  "\t) m",
+                  "",
+                  "\torder by channel_group</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          }
+        ],
+        "annotations": [
+          {
+            "name": "_TM_ExtProp_QueryDefinition",
+            "value": [
+              "select ",
+              "",
+              "\tchannel_group ",
+              "\t,(CASE channel_group",
+              "\t\tWHEN 'Direct' THEN channel_group",
+              "\t\tWHEN 'Organic Search' THEN channel_group",
+              "\t\tWHEN 'Paid Search' THEN channel_group",
+              "\t\tWHEN 'Display' THEN 'Paid Media'",
+              "\t\tWHEN '(Other)' THEN 'Paid Media'",
+              "\t\tWHEN 'Email' THEN 'Paid Media'",
+              "\t\tELSE 'Referral & Social'",
+              "\t END) as channel_grouping",
+              "",
+              "",
+              "from (",
+              "",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_high_interest_visits group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_leads group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_reach_and_engagement group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_site_key_sections group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_used_cars_conversions group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_value_chain_conversions group by channel_group",
+              "\t) m",
+              "",
+              "\torder by channel_group"
+            ]
+          },
+          {
+            "name": "_TM_ExtProp_DbTableName",
+            "value": "channel_group"
+          },
+          {
+            "name": "QueryEditorSerialization",
+            "value": [
+              "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>select ",
+              "",
+              "\tchannel_group ",
+              "\t,(CASE channel_group",
+              "\t\tWHEN 'Direct' THEN channel_group",
+              "\t\tWHEN 'Organic Search' THEN channel_group",
+              "\t\tWHEN 'Paid Search' THEN channel_group",
+              "\t\tWHEN 'Display' THEN 'Paid Media'",
+              "\t\tWHEN '(Other)' THEN 'Paid Media'",
+              "\t\tWHEN 'Email' THEN 'Paid Media'",
+              "\t\tELSE 'Referral & Social'",
+              "\t END) as channel_grouping",
+              "",
+              "",
+              "from (",
+              "",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_finance_and_insurance_conversions group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_high_interest_visits group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_leads group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_reach_and_engagement group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_site_key_sections group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_used_cars_conversions group by channel_group",
+              "\tunion",
+              "\tselect channel_group from [dbo].WS_NMSC_SITE_value_chain_conversions group by channel_group",
+              "\t) m",
+              "",
+              "\torder by channel_group</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+            ]
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "3ab66584-ff59-4949-950c-121d8dfb0783",
+        "fromTable": "WS_NMSC_MODEL_high_interest_visits_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "5a5e0c14-bf5f-477b-9637-adc8d7a32ffd",
+        "fromTable": "WS_NMSC_MODEL_high_interest_visits_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "6425e0f3-f8be-461c-b54b-e135301887cb",
+        "fromTable": "WS_NMSC_MODEL_high_interest_visits_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "09d007a4-3795-4b25-b8b7-f7074fcc0153",
+        "fromTable": "WS_NMSC_MODEL_leads_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "dbc598bc-c75d-4512-9090-88a1810c2bd2",
+        "fromTable": "WS_NMSC_MODEL_reach_and_engagement_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "42bb6cf3-1f21-48e4-8f30-ad55ddd884d8",
+        "fromTable": "WS_NMSC_MODEL_configuration_options_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "fb219fda-94dd-4974-a72a-5e24adacf634",
+        "fromTable": "WS_NMSC_MODEL_configuration_metric_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "dfe80e67-336b-4ac7-9b8c-90f1888edddc",
+        "fromTable": "WS_NMSC_MODEL_configuration_packs_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "a63603b5-d3bd-4c5a-94c8-199dd5daaf07",
+        "fromTable": "WS_NMSC_MODEL_configuration_details_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "2b96f4c6-0ac7-459b-9802-34e9d2130ba4",
+        "fromTable": "WS_NMSC_MODEL_configuration_accessories_model",
+        "fromColumn": "date",
+        "toTable": "calendar",
+        "toColumn": "Date"
+      },
+      {
+        "name": "d94976b8-5c71-4e4a-b584-ae278b17813b",
+        "fromTable": "WS_NMSC_MODEL_leads_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "9f5705e9-76ab-4519-acb2-6dc48045ad88",
+        "fromTable": "WS_NMSC_MODEL_reach_and_engagement_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "66fe21d6-7a44-4bb6-9f4f-b86f226758a4",
+        "fromTable": "WS_NMSC_MODEL_configuration_options_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "2ae50ea8-f63a-4051-af61-237300b7b08b",
+        "fromTable": "WS_NMSC_MODEL_configuration_metric_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "22afac4c-601a-4145-a653-f264107f9bad",
+        "fromTable": "WS_NMSC_MODEL_configuration_packs_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "2b85d182-6047-4b2a-8c58-7e572ad2a0bb",
+        "fromTable": "WS_NMSC_MODEL_configuration_details_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "07b649a8-d86c-4535-b66a-aa0c0cbd91bd",
+        "fromTable": "WS_NMSC_MODEL_configuration_accessories_model",
+        "fromColumn": "model",
+        "toTable": "model",
+        "toColumn": "model"
+      },
+      {
+        "name": "ce77e175-95af-46f1-827b-94d3757687e2",
+        "fromTable": "WS_NMSC_MODEL_configuration_accessories_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "1e3b70d7-d760-42ec-983b-b9dbea2f4776",
+        "fromTable": "WS_NMSC_MODEL_configuration_details_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "3735c56a-4bac-4988-b435-3f6ba5b21268",
+        "fromTable": "WS_NMSC_MODEL_configuration_packs_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "9f6ab0b1-5538-46b3-aae4-708e21653ee9",
+        "fromTable": "WS_NMSC_MODEL_configuration_metric_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "1b287e57-2737-49b4-91fa-c130cb441bbe",
+        "fromTable": "WS_NMSC_MODEL_configuration_options_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "61706f55-9d07-46a5-bb14-1089247abccb",
+        "fromTable": "WS_NMSC_MODEL_reach_and_engagement_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "02ac69e3-e7aa-4910-baf0-01a5ab8e38f6",
+        "fromTable": "WS_NMSC_MODEL_leads_model",
+        "fromColumn": "device",
+        "toTable": "device",
+        "toColumn": "device"
+      },
+      {
+        "name": "1a660f93-fe3b-441b-a0f7-33b7196cc0a3",
+        "fromTable": "WS_NMSC_MODEL_high_interest_visits_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "c6a6663c-2c1a-4ddc-9179-6ae59814a8a9",
+        "fromTable": "WS_NMSC_MODEL_configuration_accessories_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "38848315-a93c-41d2-886b-ae4c91ce6284",
+        "fromTable": "WS_NMSC_MODEL_configuration_details_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "bb2c4ba1-24f2-4317-b5f3-c8849cb08667",
+        "fromTable": "WS_NMSC_MODEL_configuration_packs_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "29d6689d-4a0b-4e2b-bf1d-ba00e560e576",
+        "fromTable": "WS_NMSC_MODEL_configuration_metric_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "f2e1e0ab-cdbb-4a4a-b4e8-2a0ffcb16aa6",
+        "fromTable": "WS_NMSC_MODEL_configuration_options_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "e6e8fa68-6f63-4b29-a8bf-6400270b2eb5",
+        "fromTable": "WS_NMSC_MODEL_reach_and_engagement_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "41cbff12-8490-461c-aeb0-9d95a095f332",
+        "fromTable": "WS_NMSC_MODEL_leads_model",
+        "fromColumn": "country_code",
+        "toTable": "Geography",
+        "toColumn": "country_code"
+      },
+      {
+        "name": "d0c5867e-d621-4320-a799-0aaed6f0ece4",
+        "fromTable": "WS_NMSC_MODEL_high_interest_visits_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "61bc6e45-eafe-413d-9331-301e13005e70",
+        "fromTable": "WS_NMSC_MODEL_configuration_accessories_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "77dcd13f-7267-431a-a519-b70d57ac2603",
+        "fromTable": "WS_NMSC_MODEL_configuration_details_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "df4be8d4-4df3-40ba-a7af-f0a61566b579",
+        "fromTable": "WS_NMSC_MODEL_configuration_packs_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "ea03405d-1b45-4369-b8c9-15a71ddcdf87",
+        "fromTable": "WS_NMSC_MODEL_leads_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "08447d27-0e3d-4feb-b5c4-154a8131f0be",
+        "fromTable": "WS_NMSC_MODEL_reach_and_engagement_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "332bdb86-11c3-4fb7-a2e2-af633ba7dd50",
+        "fromTable": "WS_NMSC_MODEL_configuration_options_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      },
+      {
+        "name": "ccd94a88-a4ea-4ecc-a997-13a85e2e6314",
+        "fromTable": "WS_NMSC_MODEL_configuration_metric_model",
+        "fromColumn": "channel_group",
+        "toTable": "channel_group",
+        "toColumn": "channel_group"
+      }
+    ],
+    "roles": [
+      {
+        "name": "ocReaders",
+        "modelPermission": "read",
+        "members": [
+          {
+            "memberName": "omni-channelreporting@toyotaeu.onmicrosoft.com",
+            "memberId": "omni-channelreporting@toyotaeu.onmicrosoft.com",
+            "identityProvider": "AzureAD"
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "ClientCompatibilityLevel",
+        "value": "400"
+      }
+    ]
+  },
+  "id": "SemanticModel"
+}

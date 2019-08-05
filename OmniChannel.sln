@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6870E480-7721-4708-BFB8-9AE898AA21B3}") = "OC_SSAS_CUBE01", "OC_SSAS\OC_SSAS_CUBE01.smproj", "{8CE414BB-95B2-4C99-9E03-51BA72086E22}"
+EndProject
+Project("{6870E480-7721-4708-BFB8-9AE898AA21B3}") = "OC_SSAS_CUBE02", "OC_SSAS_CUBE02\OC_SSAS_CUBE02.smproj", "{DF6D9180-537C-4958-BDBA-20FB12D76C10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|x86 = Development|x86
+		Production|x86 = Production|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CE414BB-95B2-4C99-9E03-51BA72086E22}.Development|x86.ActiveCfg = Development|x86
+		{8CE414BB-95B2-4C99-9E03-51BA72086E22}.Development|x86.Build.0 = Development|x86
+		{8CE414BB-95B2-4C99-9E03-51BA72086E22}.Development|x86.Deploy.0 = Development|x86
+		{8CE414BB-95B2-4C99-9E03-51BA72086E22}.Production|x86.ActiveCfg = Production|x86
+		{8CE414BB-95B2-4C99-9E03-51BA72086E22}.Production|x86.Build.0 = Production|x86
+		{8CE414BB-95B2-4C99-9E03-51BA72086E22}.Production|x86.Deploy.0 = Production|x86
+		{DF6D9180-537C-4958-BDBA-20FB12D76C10}.Development|x86.ActiveCfg = Development|x86
+		{DF6D9180-537C-4958-BDBA-20FB12D76C10}.Development|x86.Build.0 = Development|x86
+		{DF6D9180-537C-4958-BDBA-20FB12D76C10}.Development|x86.Deploy.0 = Development|x86
+		{DF6D9180-537C-4958-BDBA-20FB12D76C10}.Production|x86.ActiveCfg = Development|x86
+		{DF6D9180-537C-4958-BDBA-20FB12D76C10}.Production|x86.Build.0 = Development|x86
+		{DF6D9180-537C-4958-BDBA-20FB12D76C10}.Production|x86.Deploy.0 = Development|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8674B446-F4DF-4FC0-97C1-EC6B9F6D743D}
+	EndGlobalSection
+EndGlobal
